@@ -188,7 +188,7 @@ const SignupForm = () => {
               <li>Forgot Password</li>
             </Link>
 
-            <Link className="linked" to="/register">
+            <Link className="linked" to="/">
               <li>Signin</li>
             </Link>
           </Links>
