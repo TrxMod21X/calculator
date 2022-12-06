@@ -1,0 +1,32 @@
+{
+  "name": "calculator-back-end",
+  "version": "1.0.0",
+  "description": "TrxMod21X Calculator",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrxMod21X/calculator.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "JS",
+    "MongoDB",
+    "Express",
+    "ReactJS"
+  ],
+  "author": "TrxMod21X",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TrxMod21X/calculator/issues"
+  },
+  "homepage": "https://github.com/TrxMod21X/calculator#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.8.0"
+  }
+}
