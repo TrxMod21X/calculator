@@ -34,8 +34,35 @@ const registerController = async (req, res) => {
 };
 
 const loginController = async (req, res) => {
+  const { username, password } = req.body;
+
   try {
-    res.json({ status: "success", user: "User Login" });
+    const userFound = await User.findOne({ username });
+    if (!userFound) {
+      return res.json({
+        status: "failed",
+        message: "invalid login credentials",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userFound.password);
+
+    if (!isPasswordValid) {
+      return res.json({
+        status: "failed",
+        message: "invalid login credentials",
+      });
+    }
+
+    const updateUser = await User.findByIdAndUpdate(userFound._id, {
+      loginTime: Date.now(),
+    });
+
+    res.json({
+      status: "success",
+      user: "User Login Successfully",
+      data: updateUser,
+    });
   } catch (err) {
     res.json(err);
   }
