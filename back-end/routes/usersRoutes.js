@@ -2,9 +2,10 @@ const express = require("express");
 const {
   registerController,
   loginController,
-  fetchAllProfileController,
+  fetchUserController,
   logoutController,
 } = require("../controllers/usersController");
+const isLogin = require("../middlewares/isLogin");
 
 const userRoutes = express.Router();
 
@@ -15,7 +16,7 @@ userRoutes.post("/register", registerController);
 userRoutes.post("/login", loginController);
 
 //* GET: /api/v1/users/profile
-userRoutes.get("/profile", fetchAllProfileController);
+userRoutes.get("/profile", isLogin, fetchUserController);
 
 //* GET: /api/v1/users/logout
 userRoutes.get("/logout", logoutController);

@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../model/User");
 const appError = require("../utils/appError");
+const generateToken = require("../utils/generateToken");
+const verifyToken = require("../utils/verifyToken");
 
 const registerController = async (req, res, next) => {
   const { fullname, username, password } = req.body;
@@ -45,13 +47,13 @@ const loginController = async (req, res, next) => {
   try {
     const userFound = await User.findOne({ username });
     if (!userFound) {
-      return next(appError("invalid login credentials"));
+      return next(appError("invalid login credentials", 400));
     }
 
     const isPasswordValid = await bcrypt.compare(password, userFound.password);
 
     if (!isPasswordValid) {
-      return next(appError("invalid login credentials"));
+      return next(appError("invalid login credentials", 400));
     }
 
     const time = Date.now();
@@ -71,18 +73,20 @@ const loginController = async (req, res, next) => {
     // }, 2000);
 
     res.json({
-      status: "success",
-      user: "User Login Successfully",
-      data: updateUser,
+      status: "Login Successfully",
+      fullname: updateUser.fullname,
+      id: updateUser._id,
+      token: generateToken(updateUser._id),
     });
   } catch (err) {
     res.json(err);
   }
 };
 
-const fetchAllProfileController = async (req, res) => {
+const fetchUserController = async (req, res) => {
   try {
-    res.json({ status: "success", user: "User Profile" });
+    const user = await User.findById(req.user);
+    res.json({ status: "success", user });
   } catch (err) {
     res.json(err);
   }
@@ -99,6 +103,6 @@ const logoutController = async (req, res) => {
 module.exports = {
   registerController,
   loginController,
-  fetchAllProfileController,
+  fetchUserController,
   logoutController,
 };
