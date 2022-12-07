@@ -15,8 +15,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    loginTime: Date,
-    logoutTime: Date,
+    loginTime: { type: Number, default: 0 },
+    logoutTime: { type: Number, default: 0 },
     totalTime: {
       type: Number,
       default: 0,

@@ -1,6 +1,8 @@
 require("dotenv").config();
 const express = require("express");
+const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const userRoutes = require("./routes/usersRoutes");
+
 require("./config/dbConnect");
 
 const app = express();
@@ -17,6 +19,7 @@ app.use("/api/v1/users", userRoutes);
 
 //* -----------------------------------
 //* ERROR HANDLE MIDDLEWARES
+app.use(globalErrorHandler);
 //* -----------------------------------
 
 //* -----------------------------------

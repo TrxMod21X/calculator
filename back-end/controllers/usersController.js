@@ -1,17 +1,19 @@
 const bcrypt = require("bcryptjs");
 const User = require("../model/User");
+const appError = require("../utils/appError");
 
-const registerController = async (req, res) => {
+const registerController = async (req, res, next) => {
   const { fullname, username, password } = req.body;
+
+  if (!fullname || !username || !password) {
+    return next(appError("All Fields Required"));
+  }
 
   try {
     const userFound = await User.findOne({ username });
 
     if (userFound) {
-      return res.json({
-        status: "failed",
-        message: "User already exists",
-      });
+      return next(appError("User already exists"));
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -33,30 +35,40 @@ const registerController = async (req, res) => {
   }
 };
 
-const loginController = async (req, res) => {
+const loginController = async (req, res, next) => {
   const { username, password } = req.body;
+
+  if (!username || !password) {
+    return next(appError("All Fields Required"));
+  }
 
   try {
     const userFound = await User.findOne({ username });
     if (!userFound) {
-      return res.json({
-        status: "failed",
-        message: "invalid login credentials",
-      });
+      return next(appError("invalid login credentials"));
     }
 
     const isPasswordValid = await bcrypt.compare(password, userFound.password);
 
     if (!isPasswordValid) {
-      return res.json({
-        status: "failed",
-        message: "invalid login credentials",
-      });
+      return next(appError("invalid login credentials"));
     }
 
+    const time = Date.now();
     const updateUser = await User.findByIdAndUpdate(userFound._id, {
-      loginTime: Date.now(),
+      loginTime: time,
     });
+
+    // const start = Date.now();
+    // console.log("Timer Start....");
+
+    // setTimeout(() => {
+    //   const milis = Date.now();
+    //   const result = milis - start;
+    //   console.log(start);
+    //   console.log(milis);
+    //   console.log(`seconds elapsed = ${Math.floor(result / 1000)} seconds`);
+    // }, 2000);
 
     res.json({
       status: "success",
