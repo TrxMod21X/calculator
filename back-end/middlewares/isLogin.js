@@ -5,9 +5,10 @@ const verifyToken = require("../utils/verifyToken");
 const isLogin = (req, res, next) => {
   const token = getTokenFromHeader(req);
   const decodedUser = verifyToken(token);
+
   req.user = decodedUser.id;
 
-  if (!decodedUser) {
+  if (!decodedUser || req.session.userAuth !== token) {
     return next(appError("Invalid/Expired Token, Please login again", 401));
   }
 

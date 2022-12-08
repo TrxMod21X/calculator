@@ -19,6 +19,6 @@ userRoutes.post("/login", loginController);
 userRoutes.get("/profile", isLogin, fetchUserController);
 
 //* GET: /api/v1/users/logout
-userRoutes.get("/logout", logoutController);
+userRoutes.get("/logout", isLogin, logoutController);
 
 module.exports = userRoutes;

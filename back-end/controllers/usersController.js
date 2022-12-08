@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../model/User");
 const appError = require("../utils/appError");
 const generateToken = require("../utils/generateToken");
-const verifyToken = require("../utils/verifyToken");
 
 const registerController = async (req, res, next) => {
   const { fullname, username, password } = req.body;
@@ -61,22 +60,14 @@ const loginController = async (req, res, next) => {
       loginTime: time,
     });
 
-    // const start = Date.now();
-    // console.log("Timer Start....");
+    const token = generateToken(updateUser._id);
 
-    // setTimeout(() => {
-    //   const milis = Date.now();
-    //   const result = milis - start;
-    //   console.log(start);
-    //   console.log(milis);
-    //   console.log(`seconds elapsed = ${Math.floor(result / 1000)} seconds`);
-    // }, 2000);
-
+    req.session.userAuth = token;
     res.json({
       status: "Login Successfully",
       fullname: updateUser.fullname,
       id: updateUser._id,
-      token: generateToken(updateUser._id),
+      token,
     });
   } catch (err) {
     res.json(err);
@@ -93,8 +84,28 @@ const fetchUserController = async (req, res) => {
 };
 
 const logoutController = async (req, res) => {
+  const userFound = await User.findOne({ id: req.user });
+
+  const time = Date.now();
+  const logoutTime = time;
+  const currentTime = userFound.totalTime;
+  let totalTime = 0;
+  let calculate = logoutTime - userFound.loginTime;
+  let result = Math.floor(calculate / 1000);
+
+  if (currentTime > 0) {
+    totalTime = currentTime + result;
+  } else {
+    totalTime = result;
+  }
+
   try {
-    res.json({ status: "success", user: "User Logout" });
+    const updated = await User.findByIdAndUpdate(userFound._id, {
+      logoutTime,
+      totalTime,
+    });
+    await req.session.destroy();
+    res.json({ status: "success", user: "User Logout Success" });
   } catch (err) {
     res.json(err);
   }
